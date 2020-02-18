@@ -1,0 +1,86 @@
+service: significa-website-functions
+
+plugins:
+  - serverless-dotenv-plugin
+  - serverless-iam-roles-per-function
+  - serverless-domain-manager
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  region: eu-west-1
+  stage: prod
+
+custom:
+  customDomain:
+    domainName: api.intrative.co
+    stage: prod
+    certificateName: api.intrative.co
+    createRoute53Record: true
+    endpointType: 'regional'
+    securityPolicy: tls_1_2
+
+functions:
+  enquiry:
+    handler: src/enquiry.run
+    iamRoleStatements:
+      - Effect: 'Allow'
+        Action: ses:SendEmail
+        Resource: '*'
+    events:
+      - http:
+          method: post
+          path: enquiry
+          cors: true
+
+  career:
+    handler: src/career.run
+    iamRoleStatements:
+      - Effect: 'Allow'
+        Action: ses:SendEmail
+        Resource: '*'
+    events:
+      - http:
+          method: post
+          path: career
+          cors: true
+
+  requestUploadUrl:
+    handler: src/requestUploadUrl.run
+    iamRoleStatements:
+      - Effect: 'Allow'
+        Action:
+          - 's3:*'
+        Resource: 'arn:aws:s3:::${env:UPLOAD_BUCKET}/*'
+    events:
+      - http:
+          method: post
+          path: request-upload-url
+          cors: true
+
+  deploy:
+    handler: src/deploy.run
+    events:
+      - http:
+          method: post
+          path: deploy
+          cors: true
+
+resources:
+  Resources:
+    UploadBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${env:UPLOAD_BUCKET}
+        AccessControl: PublicRead
+        CorsConfiguration:
+          CorsRules:
+            - AllowedMethods:
+                - GET
+                - PUT
+                - POST
+                - HEAD
+              AllowedOrigins:
+                - '*'
+              AllowedHeaders:
+                - '*'

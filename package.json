@@ -1,0 +1,17 @@
+{
+  "name": "intrative-website-functions",
+  "private": true,
+  "license": "ISC",
+  "devDependencies": {
+    "@significa/eslint-config": "0.0.9",
+    "@significa/prettier-config": "0.0.9",
+    "serverless-domain-manager": "^3.3.0",
+    "serverless-dotenv-plugin": "^2.1.1",
+    "serverless-iam-roles-per-function": "^2.0.2"
+  },
+  "dependencies": {
+    "query-string": "^6.9.0",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.5"
+  }
+}
